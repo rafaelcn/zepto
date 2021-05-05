@@ -1,0 +1,5 @@
+# undesired folders
+.vscode
+
+# output linker files
+*.dsr
