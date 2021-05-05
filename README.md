@@ -26,8 +26,6 @@ in the table below.
 | bleu   | Conditional jump (Unsigned)  |
 | bles   | Unconditional jump (Signed)  |
 
-<br />
-
 There's a collection of programs inside the `programs` folder. Zepto programs
 (in its own assembly language) are sufixed with the `.z` extension, you can open
 them in any text editor of your choice to read its content. Note that the linker
