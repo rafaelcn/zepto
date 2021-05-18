@@ -2,4 +2,4 @@
 .vscode
 
 # output linker files
-*.dsr
+*.drs
