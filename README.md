@@ -14,7 +14,6 @@ loaded.
 Zepto is powered by a small assembly language. All available opcodes are listed
 in the table below.
 
-
 | opcode | Description                  |
 | ------ | ---------------------------  |
 | addi   | Add with immediate           |
