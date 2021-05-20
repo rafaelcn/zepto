@@ -43,16 +43,21 @@ def main():
     output_content = ""
 
     zepto_instructions = []
+    zepto_rom_size = 64*1024
     zepto_instructions_size = 0
 
     with open(input_name, 'r') as fd:
         for line in fd:
             # filtering parseable lines
             if not (line.startswith('#') or line.startswith('\n')):
-                zepto_instructions.append(parse(line))
+                zepto_instructions.append(zepto_parse(line))
+
+    # First construct the header
+    output_content += zepto_header(len(zepto_instructions_size)*2)
 
     for zepto_instruction in zepto_instructions:
         pass
+
 
     print(zepto_instructions)
 
@@ -61,7 +66,7 @@ def main():
         fd.write(output_content)
 
 
-def parse(line):
+def zepto_parse(line):
     '''
     Parses a line of instructions into the .DSR format
     '''
@@ -94,7 +99,7 @@ def parse(line):
     return parsed
 
 
-def header(size):
+def zepto_header(size):
     tz = pytz.timezone('Brazil/East')
     date = datetime.datetime.now(tz)
 
@@ -107,13 +112,17 @@ def header(size):
         # actual program has ''' + size + ''' bytes
         #
         #
-        #
+        #\n\n
     '''
 
     return data
 
 
 def pad(list):
+    '''
+    Return a number representing the amount of padding necessary to format
+    '''
+
     # [] + ''*len(list)
     n = 2 + 2*len(list)
 
@@ -128,7 +137,7 @@ def pad(list):
             else:
                 size = len(e)
         else:
-            # assume it is a string
+            # assume it is a string list
             size = len(e)
 
         n += size
