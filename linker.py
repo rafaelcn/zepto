@@ -43,7 +43,7 @@ def main():
     output_content = ""
 
     zepto_instructions = []
-    zepto_rom_size = 64*1024
+    zepto_rom_size = 4*1024*16  # 4KB*16
     zepto_instructions_size = 0
 
     with open(input_name, 'r') as fd:
@@ -53,13 +53,19 @@ def main():
                 zepto_instructions.append(zepto_parse(line))
 
     # First construct the header
-    output_content += zepto_header(len(zepto_instructions_size)*2)
+    zepto_instructions_size = len(zepto_instructions)*2
+    output_content += zepto_header(zepto_instructions_size)
 
-    for zepto_instruction in zepto_instructions:
-        pass
+    j = 1
+    for i in range(0, len(zepto_instructions)):
+        output_content += zepto_instructions[i] + " "
 
+        if j % 2 == 0:
+            output_content += "\n"
+            j = 0
+        j += 1
 
-    print(zepto_instructions)
+    print(output_content)
 
     # create read/write only and trunc the file if it already exists.
     with open(output_name, 'w+') as fd:
@@ -106,14 +112,13 @@ def zepto_header(size):
     now = date.strftime("%D %H:%M:%S")
 
     data = '''
-        # Zepto Linker
-        #
-        # program created at ''' + now + '''
-        # actual program has ''' + size + ''' bytes
-        #
-        #
-        #\n\n
-    '''
+# Zepto Linker
+#
+# Program created at ''' + now + '''
+# Program has ''' + str(size) + ''' bytes (program without ROM padding)
+#
+#\n
+'''
 
     return data
 
