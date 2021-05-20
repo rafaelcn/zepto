@@ -29,7 +29,7 @@ opcodes = {
 }
 
 _registers_name = ['R' + str(number) for number in range(15)]
-_registers_addr = [bin(number)[2:].zfill(4) for number in range(15)]
+_registers_addr = [hex(number)[2:].zfill(4) for number in range(15)]
 
 registers = dict(zip(_registers_name, _registers_addr))
 
@@ -50,7 +50,7 @@ def main():
         for line in fd:
             # filtering parseable lines
             if not (line.startswith('#') or line.startswith('\n')):
-                zepto_instructions.append(zepto_parse(line))
+                zepto_instructions += zepto_parse(line)
 
     # First construct the header
     zepto_instructions_size = len(zepto_instructions)*2
@@ -60,7 +60,7 @@ def main():
     for i in range(0, len(zepto_instructions)):
         output_content += zepto_instructions[i] + " "
 
-        if j % 2 == 0:
+        if j % 8 == 0:
             output_content += "\n"
             j = 0
         j += 1
@@ -77,7 +77,7 @@ def zepto_parse(line):
     Parses a line of instructions into the .DSR format
     '''
 
-    parsed = ""
+    parsed = []
     data = line.strip('\n').split(' ')
 
     opcode_mnemonic = data[0]
@@ -85,23 +85,21 @@ def zepto_parse(line):
 
     # Parsing goes from
     opcode = opcodes[opcode_mnemonic]
-    parsed += opcode
+    parsed.append(opcode)
 
     for operand in operands_mnemonic:
         try:
-            parsed += " " + registers[operand]
+            parsed.append(registers[operand])
         except KeyError:
             if operand.isnumeric():
-                parsed += " " + f'{int(operand):X}'.zfill(4)
+                parsed.append(f'{int(operand):X}'.zfill(4))
 
     padd = ' '*(25-pad(operands_mnemonic))
-    formatted = 'opcode {:4} -> operands {}{} -> {} {}'.format(opcode_mnemonic,
+    formatted = 'opcode {:4} -> operands {}{} -> {}'.format(opcode_mnemonic,
                                                                 operands_mnemonic,
                                                                 padd,
-                                                                opcode,
                                                                 parsed)
     print(formatted)
-
     return parsed
 
 
@@ -117,6 +115,7 @@ def zepto_header(size):
 # Program created at ''' + now + '''
 # Program has ''' + str(size) + ''' bytes (program without ROM padding)
 #
+# ROM 4Kx16
 #\n
 '''
 
