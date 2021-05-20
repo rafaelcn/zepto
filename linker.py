@@ -1,4 +1,5 @@
 import datetime
+import math
 import pytz
 import sys
 import os
@@ -38,14 +39,22 @@ def main():
     input_name = sys.argv[1]
 
     # contains the instructions of the program that will be transformed
-    output_content = ""
     output_name = input_name.split(".")[0] + ".dsr"
+    output_content = ""
+
+    zepto_instructions = []
+    zepto_instructions_size = 0
 
     with open(input_name, 'r') as fd:
         for line in fd:
-            output_content += parse(line)
+            # filtering parseable lines
+            if not (line.startswith('#') or line.startswith('\n')):
+                zepto_instructions.append(parse(line))
 
-    print(output_content)
+    for zepto_instruction in zepto_instructions:
+        pass
+
+    print(zepto_instructions)
 
     # create read/write only and trunc the file if it already exists.
     with open(output_name, 'w+') as fd:
@@ -53,27 +62,34 @@ def main():
 
 
 def parse(line):
+    '''
+    Parses a line of instructions into the .DSR format
+    '''
+
     parsed = ""
+    data = line.strip('\n').split(' ')
 
-    if not (line.startswith('#') or line.startswith('\n')):
-        data = line.split(" ")
+    opcode_mnemonic = data[0]
+    operands_mnemonic = data[1].split(",")
 
-        opcode = data[0]
-        operands = data[1].split(",")
+    # Parsing goes from
+    opcode = opcodes[opcode_mnemonic]
+    parsed += opcode
 
-        print('opcode % -> operands %', opcode, operands)
+    for operand in operands_mnemonic:
+        try:
+            parsed += " " + registers[operand]
+        except KeyError:
+            if operand.isnumeric():
+                parsed += " " + f'{int(operand):X}'.zfill(4)
 
-        parsed += opcodes[opcode]
-
-        for operand in operands:
-            try:
-                parsed += " " + registers[operand]
-            except KeyError:
-                if operand.isnumeric():
-                    parsed += " " + hex(int(operand))[2:].zfill(4)
-
-    if len(parsed) > 0:
-        return parsed + "\n"
+    padd = ' '*(25-pad(operands_mnemonic))
+    formatted = 'opcode {:4} -> operands {}{} -> {} {}'.format(opcode_mnemonic,
+                                                                operands_mnemonic,
+                                                                padd,
+                                                                opcode,
+                                                                parsed)
+    print(formatted)
 
     return parsed
 
@@ -88,13 +104,36 @@ def header(size):
         # Zepto Linker
         #
         # program created at ''' + now + '''
-        # program has ''' + size + ''' bytes
+        # actual program has ''' + size + ''' bytes
         #
         #
         #
     '''
 
     return data
+
+
+def pad(list):
+    # [] + ''*len(list)
+    n = 2 + 2*len(list)
+
+    if len(list) > 0:
+        # spaces + commas
+        n += 2*(len(list)-1)
+
+    for e in list:
+        if e.isnumeric():
+            if e == 0:
+                size = 1
+            else:
+                size = len(e)
+        else:
+            # assume it is a string
+            size = len(e)
+
+        n += size
+
+    return n
 
 
 if __name__ == "__main__":
