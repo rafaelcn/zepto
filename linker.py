@@ -1,8 +1,6 @@
 import datetime
-import math
 import pytz
 import sys
-import os
 
 #
 # Zepto Linker
@@ -38,43 +36,26 @@ def main():
     # The file used to read instructions from the Zepto assembly language.
     input_name = sys.argv[1]
 
-    # contains the instructions of the program that will be transformed
-    output_name = input_name.split(".")[0] + ".dsr"
-    output_content = ""
-
     zepto_instructions = []
-    zepto_rom_size = 4*1024*16  # 4KB*16
+    zepto_immediate = []
     zepto_instructions_size = 0
 
     with open(input_name, 'r') as fd:
         for line in fd:
             # filtering parseable lines
             if not (line.startswith('#') or line.startswith('\n')):
-                zepto_instructions += zepto_parse(line)
+                zins, zimm = zepto_parse(line)
 
-    # First construct the header
-    zepto_instructions_size = len(zepto_instructions)*2
-    output_content += zepto_header(zepto_instructions_size)
+                zepto_instructions += zins
+                zepto_immediate += zimm
 
-    j = 1
-    for i in range(0, len(zepto_instructions)):
-        output_content += zepto_instructions[i] + " "
-
-        if j % 8 == 0:
-            output_content += "\n"
-            j = 0
-        j += 1
-
-    print(output_content)
-
-    # create read/write only and trunc the file if it already exists.
-    with open(output_name, 'w+') as fd:
-        fd.write(output_content)
+    build(input_name, zepto_instructions)
+    build(input_name, zepto_immediate, True)
 
 
 def zepto_parse(line):
     '''
-    Parses a line of instructions into the .DSR format
+    Parses a line of instructions into the .DSR format.
     '''
 
     parsed = []
@@ -83,24 +64,36 @@ def zepto_parse(line):
     opcode_mnemonic = data[0]
     operands_mnemonic = data[1].split(",")
 
-    # Parsing goes from
+    # The immediate is the last argument of a call, but some instructions
+    # doesn't have any.
+    immediate = []
+    if len(operands_mnemonic) > 0:
+        number = int(operands_mnemonic[-1])
+        if number < 0:
+            # convert the immediate as a two's complement
+            number = (1 << 16) + number
+        hex_number = f'{int(number):X}'.zfill(8)
+        immediate.append(hex_number[0:4])
+        immediate.append(hex_number[4:8])
+
     opcode = opcodes[opcode_mnemonic]
     parsed.append(opcode)
 
-    for operand in operands_mnemonic:
-        try:
-            parsed.append(registers[operand])
-        except KeyError:
-            if operand.isnumeric():
-                parsed.append(f'{int(operand):X}'.zfill(4))
+    for operand in operands_mnemonic[:-1]:
+        parsed.append(registers[operand])
+
+    # reversing the list so the generated assembly language code can be
+    # understood by the processor as specified in the documentation.
+    parsed.reverse()
 
     padd = ' '*(25-pad(operands_mnemonic))
     formatted = 'opcode {:4} -> operands {}{} -> {}'.format(opcode_mnemonic,
-                                                                operands_mnemonic,
-                                                                padd,
-                                                                parsed)
-    print(formatted)
-    return parsed
+                                                            operands_mnemonic,
+                                                            padd,
+                                                            parsed)
+    print(formatted, immediate)
+
+    return parsed, immediate
 
 
 def zepto_header(size):
@@ -120,6 +113,35 @@ def zepto_header(size):
 '''
 
     return data
+
+
+def build(name, instructions, is_immediate=False):
+    '''
+    Constructs a working program to the Zepto processor. It takes an input and
+    writes that output according to the specified ROM format of Deeds
+    '''
+    file_name = name.split(".")[0]
+
+    if is_immediate:
+        file_name += "_immediate.dsr"
+    else:
+        file_name += ".dsr"
+
+    output_program = ""
+    output_program += zepto_header(len(instructions)*2)
+
+    j = 1
+    for i in range(0, len(instructions)):
+        output_program += instructions[i] + " "
+
+        if j % 8 == 0:
+            output_program += "\n"
+            j = 0
+        j += 1
+
+    # create read/write only and trunc the file if it already exists.
+    with open(file_name, 'w+') as fd:
+        fd.write(output_program)
 
 
 def pad(list):
