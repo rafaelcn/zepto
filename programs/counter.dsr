@@ -1,0 +1,12 @@
+
+# Zepto Linker
+#
+# Program created at 05/21/21 00:55:06
+# Program has 44 bytes (program without ROM padding)
+#
+# ROM 4Kx16
+#
+
+0000 0000 0001 0001 0000 0000 0002 0000 
+0000 0002 0002 0001 0000 0001 0001 0000 
+0002 0001 0007 0001 0001 0005 
