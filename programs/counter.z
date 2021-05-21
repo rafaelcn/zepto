@@ -1,9 +1,9 @@
 #
-# This program counts from -16 to 30
+# This program counts from -16 to 16
 #
 
 subi R1,R0,R0,16
-addi R2,R0,R0,30
+addi R2,R0,R0,16
 subi R2,R2,R0,1
 addi R1,R1,R0,1
 bles R1,R2,-1
