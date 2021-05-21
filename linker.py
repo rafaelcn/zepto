@@ -115,14 +115,15 @@ def zepto_header(size):
 
     now = date.strftime("%D %H:%M:%S")
 
-    data = '''
-#- Zepto Linker
+    data = '''#- Zepto Linker
 #-
 #- Program created at ''' + now + '''
 #- Program has ''' + str(size) + ''' bytes (program without ROM padding)
 #-
 #- ROM 4Kx16
-#-\n
+#-\n\n
+#A 0000h
+#H\n\n
 '''
 
     return data
