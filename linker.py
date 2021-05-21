@@ -7,7 +7,7 @@ import sys
 #
 # @author  Rafael Campos Nunes
 # @date    29/04/2021
-# @version 1.0
+# @version 1.1
 #
 # Reads a .z file and outputs a .dsr file that is compatible with Deeds ROM
 # software module. The zepto processor reads from a ROM that has a capacity of
@@ -16,18 +16,18 @@ import sys
 
 # These opcodes are written in hexadecimal
 opcodes = {
-    "addi": '0000',
-    "subi": '0001',
-    "andi": '0002',
-    "ori":  '0003',
-    "xori": '0004',
-    "beq":  '0005',
-    "bleu": '0006',
-    "bles": '0007',
+    "addi": '0',
+    "subi": '1',
+    "andi": '2',
+    "ori":  '3',
+    "xori": '4',
+    "beq":  '5',
+    "bleu": '6',
+    "bles": '7',
 }
 
-_registers_name = ['R' + str(number) for number in range(15)]
-_registers_addr = [hex(number)[2:].zfill(4) for number in range(15)]
+_registers_name = ['R' + str(number) for number in range(16)]
+_registers_addr = [f'{number:X}' for number in range(16)]
 
 registers = dict(zip(_registers_name, _registers_addr))
 
@@ -38,7 +38,6 @@ def main():
 
     zepto_instructions = []
     zepto_immediate = []
-    zepto_instructions_size = 0
 
     with open(input_name, 'r') as fd:
         for line in fd:
@@ -56,39 +55,53 @@ def main():
 def zepto_parse(line):
     '''
     Parses a line of instructions into the .DRS format.
+
+    addi Rd, Ra, Rb, Imm -> Rd = Ra + Rb + Imm
+
+    subi R1, R0, R0, 16
+    addi R2,R0,R0,16
+
+    Imm  Rd Ra Rb Opcode
+    0010 1  0  0  1      -> 0x0010 0x1001
+    0010 2  0  0  0      -> 0x0010 0x2000
     '''
 
     parsed = []
     data = line.strip('\n').split(' ')
 
     opcode_mnemonic = data[0]
-    operands_mnemonic = data[1].split(",")
+    registers_mnemonic = data[1].split(",")[:-1]
+    immediate_mnemonic = data[1].split(",")[-1]
 
     # The immediate is the last argument of a call, but some instructions
     # doesn't have any.
     immediate = []
-    if len(operands_mnemonic) > 0:
-        number = int(operands_mnemonic[-1])
-        if number < 0:
-            # convert the immediate as a two's complement
-            number = (1 << 16) + number
-        hex_number = f'{int(number):X}'.zfill(8)
-        immediate.append(hex_number[0:4])
-        immediate.append(hex_number[4:8])
+    number = int(immediate_mnemonic)
+    if number < 0:
+        # convert the immediate as a two's complement
+        number = (1 << 16) + number
+    immediate.append(f'{int(number):X}'.zfill(4))
 
     opcode = opcodes[opcode_mnemonic]
     parsed.append(opcode)
 
-    for operand in operands_mnemonic[:-1]:
-        parsed.append(registers[operand])
+    if len(registers_mnemonic) > 2:
+        parsed.append(registers[registers_mnemonic[1]])
+        parsed.append(registers[registers_mnemonic[2]])
+        parsed.append(registers[registers_mnemonic[0]])
+    else:
+        parsed.append(registers[registers_mnemonic[1]])
+        parsed.append(registers[registers_mnemonic[0]])
+        parsed.append('0')
 
     # reversing the list so the generated assembly language code can be
     # understood by the processor as specified in the documentation.
     parsed.reverse()
+    parsed = [str.join('', parsed)]
 
-    padd = ' '*(25-pad(operands_mnemonic))
+    padd = ' '*(25-pad(registers_mnemonic))
     formatted = 'opcode {:4} -> operands {}{} -> {}'.format(opcode_mnemonic,
-                                                            operands_mnemonic,
+                                                            registers_mnemonic,
                                                             padd,
                                                             parsed)
     print(formatted, immediate)
