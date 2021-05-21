@@ -7,7 +7,7 @@ import sys
 #
 # @author  Rafael Campos Nunes
 # @date    29/04/2021
-# @version 0.7
+# @version 1.0
 #
 # Reads a .z file and outputs a .dsr file that is compatible with Deeds ROM
 # software module. The zepto processor reads from a ROM that has a capacity of
