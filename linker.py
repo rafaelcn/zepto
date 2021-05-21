@@ -55,7 +55,7 @@ def main():
 
 def zepto_parse(line):
     '''
-    Parses a line of instructions into the .DSR format.
+    Parses a line of instructions into the .DRS format.
     '''
 
     parsed = []
@@ -103,13 +103,13 @@ def zepto_header(size):
     now = date.strftime("%D %H:%M:%S")
 
     data = '''
-# Zepto Linker
-#
-# Program created at ''' + now + '''
-# Program has ''' + str(size) + ''' bytes (program without ROM padding)
-#
-# ROM 4Kx16
-#\n
+#- Zepto Linker
+#-
+#- Program created at ''' + now + '''
+#- Program has ''' + str(size) + ''' bytes (program without ROM padding)
+#-
+#- ROM 4Kx16
+#-\n
 '''
 
     return data
@@ -123,9 +123,9 @@ def build(name, instructions, is_immediate=False):
     file_name = name.split(".")[0]
 
     if is_immediate:
-        file_name += "_immediate.dsr"
+        file_name += "_immediate.drs"
     else:
-        file_name += ".dsr"
+        file_name += ".drs"
 
     output_program = ""
     output_program += zepto_header(len(instructions)*2)
