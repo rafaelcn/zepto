@@ -82,21 +82,25 @@ def zepto_parse(line):
         number = (1 << 16) + number
     immediate.append(f'{int(number):X}'.zfill(4))
 
+
+
+    if len(registers_mnemonic) > 2:
+        parsed.append(registers[registers_mnemonic[0]])
+        parsed.append(registers[registers_mnemonic[1]])
+        parsed.append(registers[registers_mnemonic[2]])
+    else:
+        parsed.append('0')
+        parsed.append(registers[registers_mnemonic[0]])
+        parsed.append(registers[registers_mnemonic[1]])
+
     opcode = opcodes[opcode_mnemonic]
     parsed.append(opcode)
 
-    if len(registers_mnemonic) > 2:
-        parsed.append(registers[registers_mnemonic[1]])
-        parsed.append(registers[registers_mnemonic[2]])
-        parsed.append(registers[registers_mnemonic[0]])
-    else:
-        parsed.append(registers[registers_mnemonic[1]])
-        parsed.append(registers[registers_mnemonic[0]])
-        parsed.append('0')
+    #print(opcode, registers_mnemonic, parsed)
 
     # reversing the list so the generated assembly language code can be
     # understood by the processor as specified in the documentation.
-    parsed.reverse()
+    #parsed.reverse()
     parsed = [str.join('', parsed)]
 
     padd = ' '*(25-pad(registers_mnemonic))
