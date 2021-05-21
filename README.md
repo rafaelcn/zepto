@@ -1,6 +1,7 @@
 # The Zepto
 
-The zepto processor is a small 16 bit educational processor that is implemented using Deeds software.
+The zepto processor is a small 16 bit educational processor that is implemented
+using Deeds software.
 
 # Circuitry
 
@@ -12,18 +13,18 @@ loaded.
 # The assembly language
 
 Zepto is powered by a small assembly language. All available opcodes are listed
-in the table below.
+in the table below with the respective opcodes encoded in hexadecimal.
 
-| opcode | Description                  |
-| ------ | ---------------------------  |
-| addi   | Add with immediate           |
-| subi   | Subtract with immediate      |
-| andi   | And bitwise with immediate   |
-| ori    | Or bitwise with immediate    |
-| xori   | Xor bitwise with immediate   |
-| beq    | Conditional jump             |
-| bleu   | Conditional jump (Unsigned)  |
-| bles   | Unconditional jump (Signed)  |
+| opcode | Description                  | Opcode |
+| ------ | ---------------------------  | ------ |
+| addi   | Add with immediate           | '0000' |
+| subi   | Subtract with immediate      | '0001' |
+| andi   | And bitwise with immediate   | '0002' |
+| ori    | Or bitwise with immediate    | '0003' |
+| xori   | Xor bitwise with immediate   | '0004' |
+| beq    | Conditional jump             | '0005' |
+| bleu   | Conditional jump (Unsigned)  | '0006' |
+| bles   | Unconditional jump (Signed)  | '0007' |
 
 There's a collection of programs inside the `programs` folder. Zepto programs
 (in its own assembly language) are sufixed with the `.z` extension, you can open
