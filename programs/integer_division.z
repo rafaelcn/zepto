@@ -1,0 +1,17 @@
+#
+# Integer division of numbers without signaling
+#
+# R1 = 8
+# R2 = 2
+#
+# R1/R2=4
+#
+
+# set up the registers R0 and R1 with 8 and 2 respectively
+addi R1,R0,R0,8
+addi R2,R0,R0,2
+bleu R2,R3,3
+subi R3,R1,R2,0
+beq R0,R0,-2
+beq R3,R3,0
+
