@@ -42,8 +42,8 @@ is to execute the linker with Python (>= 3.6) as shown below.
 python3 linker.py ./programs/sum.z
 ```
 
-After the execution you will be able to the see the generated ROM file inside
-the programs folter with the right format (`sum.dsr`).
+After the execution you will be able to the see the generated ROM files inside
+the programs folter with the right format (`sum.dsr` and `sum_immediate.dsr`).
 
 
 
