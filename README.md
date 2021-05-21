@@ -1,7 +1,13 @@
 # The Zepto
 
 The zepto processor is a small 16 bit educational processor that is implemented
-using Deeds software.
+using Deeds software. The image below shows an overview of the implemented
+processor, if you want to see the circuitry for an specific component, open the
+respective `.cbe` block file.
+
+<p align="center">
+    <img  src="zepto.png" />
+</p>
 
 # Circuitry
 
