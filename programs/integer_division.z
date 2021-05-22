@@ -8,7 +8,7 @@
 #
 
 # R1 = N
-addi R1,R0,R0,15
+addi R1,R0,R0,32
 # R2 = D
 addi R2,R0,R0,4
 # R = N
