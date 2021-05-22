@@ -1,3 +1,12 @@
 #
 #
 #
+
+addi R1,R0,R0,10
+addi R2,R0,R0,3
+addi R3,R1,R0,0
+addi R4,R0,R0,0
+subi R3,R3,R2,0
+addi R4,R4,R0,1
+bleu R2,R3,-2
+beq R3,R3,0
