@@ -3,7 +3,7 @@ import pytz
 import sys
 
 #
-# Zepto Linker
+# Zepto Assembler
 #
 # @author  Rafael Campos Nunes
 # @date    29/04/2021
@@ -65,7 +65,6 @@ def zepto_parse(line):
     0010 1  0  0  1      -> 0x0010 0x1001
     0010 2  0  0  0      -> 0x0010 0x2000
     '''
-
     parsed = []
     data = line.strip('\n').split(' ')
 
@@ -82,8 +81,6 @@ def zepto_parse(line):
         number = (1 << 16) + number
     immediate.append(f'{int(number):X}'.zfill(4))
 
-
-
     if len(registers_mnemonic) > 2:
         parsed.append(registers[registers_mnemonic[0]])
         parsed.append(registers[registers_mnemonic[1]])
@@ -96,11 +93,6 @@ def zepto_parse(line):
     opcode = opcodes[opcode_mnemonic]
     parsed.append(opcode)
 
-    #print(opcode, registers_mnemonic, parsed)
-
-    # reversing the list so the generated assembly language code can be
-    # understood by the processor as specified in the documentation.
-    #parsed.reverse()
     parsed = [str.join('', parsed)]
 
     padd = ' '*(25-pad(registers_mnemonic))
@@ -119,7 +111,7 @@ def zepto_header(size):
 
     now = date.strftime("%D %H:%M:%S")
 
-    data = '''#- Zepto Linker
+    data = '''#- Zepto Assembler
 #-
 #- Program created at ''' + now + '''
 #- Program has ''' + str(size) + ''' bytes (program without ROM padding)
