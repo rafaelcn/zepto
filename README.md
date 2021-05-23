@@ -38,11 +38,11 @@ them in any text editor of your choice to read its content. Note that the linker
 is in its **early stages** of development and it might not be fully compliant,
 yet.
 
-# Linking
+# Assembling
 
-The linker provides easy creation of compliant zepto programs with the Deeds
-ROM specific format (.dsr). If you want to link some program all you have to do
-is to execute the linker with Python (>= 3.6) as shown below.
+The assembler provides easy creation of compliant zepto programs with the Deeds
+ROM specific format (.dsr). If you want to assemble some program all you have to
+do is to execute the assembler with Python (>= 3.6) as shown below.
 
 ```
 python3 assembler.py ./programs/sum.z
