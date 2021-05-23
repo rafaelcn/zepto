@@ -1,16 +1,29 @@
-#
-#
-#
+#R5 = A*B
+#R1 = A
+#R2 = B
+#R3 = A sign
+#R4 = B sign
 
 addi R1,R0,R0,15
 addi R2,R0,R0,-4
 
-bles R1,R0,2  goto -A*()
-bles R2,R0,2  goto A*-B
-bles R2,R0,10  goto -A*-B
-# -A*B == A*-B
+#if -A
+bles R0,R1,3
+subi R1,R0,R1,0
+addi R3,R0,R0,1
 
+#if -B
+bles R0,R2,3
+subi R2,R0,R2,0
+addi R4,R0,R0,1
 
+#R5 = +R1*+R2
+beq R2,R0,4
+addi R5,R5,R1,0
+subi R2,R2,R0,1
+beq R0,R0,-3
 
+beq R3,R4,2
+subi R5,R0,R5,0
+beq R5,R5,0
 
-# -A*-B
